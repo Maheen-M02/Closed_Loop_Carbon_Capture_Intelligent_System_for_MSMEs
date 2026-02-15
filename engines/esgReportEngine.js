@@ -24,6 +24,27 @@ function roundTo(value, decimals = 2) {
 }
 
 /**
+ * Formats number with Indian locale
+ * @param {number} value
+ * @returns {string}
+ */
+function formatIndianNumber(value) {
+  return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+}
+
+/**
+ * Formats carbon intensity with appropriate precision
+ * @param {number} intensity
+ * @returns {string}
+ */
+function formatCarbonIntensity(intensity) {
+  if (intensity < 0.01) {
+    return roundTo(intensity, 4).toString();
+  }
+  return roundTo(intensity, 2).toString();
+}
+
+/**
  * Calculates anomaly rate percentage
  * @param {number} anomalyCount
  * @param {number} totalHours
@@ -41,8 +62,10 @@ function calculateAnomalyRate(anomalyCount, totalHours) {
  * @returns {number}
  */
 function calculateDowntimePercent(downtimeMinutes, totalRuntimeMinutes) {
-  if (totalRuntimeMinutes === 0) return 0;
-  return (downtimeMinutes / totalRuntimeMinutes) * 100;
+  const totalMinutes = downtimeMinutes + totalRuntimeMinutes;
+  if (totalMinutes === 0) return 0;
+  const percent = (downtimeMinutes / totalMinutes) * 100;
+  return Math.min(percent, 100);
 }
 
 /**
@@ -57,7 +80,16 @@ function generateExecutiveSummary(baseData, analysis) {
   const complianceStatus = analysis.compliance.compliance_status || "Unknown";
   const optimizationPotential = roundTo(safeNumber(analysis.optimization.optimization_potential_percent));
 
-  return `The facility recorded total emissions of ${totalEmission} tons with a carbon risk score of ${riskScore}. Current compliance status is ${complianceStatus}. Analysis indicates an optimization potential of ${optimizationPotential}%, representing significant opportunity for emission reduction and operational efficiency improvement. Strategic interventions are recommended to enhance environmental performance and regulatory alignment.`;
+  let opportunityPhrase = "significant opportunity";
+  if (optimizationPotential > 20) {
+    opportunityPhrase = "significant opportunity";
+  } else if (optimizationPotential >= 10) {
+    opportunityPhrase = "moderate opportunity";
+  } else {
+    opportunityPhrase = "limited optimization opportunity";
+  }
+
+  return `The facility recorded total emissions of ${totalEmission} tons with a carbon risk score of ${riskScore}. Current compliance status is ${complianceStatus}. Analysis indicates an optimization potential of ${optimizationPotential}%, representing ${opportunityPhrase} for emission reduction and operational efficiency improvement. Strategic interventions are recommended to enhance environmental performance and regulatory alignment.`;
 }
 
 /**
@@ -67,7 +99,7 @@ function generateExecutiveSummary(baseData, analysis) {
  * @returns {string}
  */
 function generateEnvironmentalPerformance(baseData, analysis) {
-  const carbonIntensity = roundTo(safeNumber(analysis.metrics.carbon_intensity));
+  const carbonIntensity = formatCarbonIntensity(safeNumber(analysis.metrics.carbon_intensity));
   const volatility = roundTo(safeNumber(analysis.metrics.volatility));
   const anomalyRate = roundTo(calculateAnomalyRate(
     safeNumber(baseData.anomaly_count),
@@ -124,11 +156,20 @@ function generateOptimizationStrategy(analysis) {
  */
 function generateFinancialImpactSummary(analysis) {
   const carbonCredits = roundTo(safeNumber(analysis.financial_impact.carbon_credits_generated));
-  const creditValueMin = roundTo(safeNumber(analysis.financial_impact.estimated_credit_value_min));
-  const creditValueMax = roundTo(safeNumber(analysis.financial_impact.estimated_credit_value_max));
+  const creditValueMin = safeNumber(analysis.financial_impact.estimated_credit_value_min);
+  const creditValueMax = safeNumber(analysis.financial_impact.estimated_credit_value_max);
   const roiPercent = roundTo(safeNumber(analysis.financial_impact.roi_percent));
 
-  return `Projected carbon credit generation: ${carbonCredits} credits, valued between ₹${creditValueMin} and ₹${creditValueMax}. Estimated return on investment for optimization initiatives is ${roiPercent}%. ${roiPercent > 0 ? 'Financial analysis supports strategic investment in emission reduction programs.' : 'Further evaluation of cost-benefit scenarios is recommended.'} Carbon credit monetization and compliance penalty avoidance present substantial financial upside for the organization.`;
+  let financialOutlook = "";
+  if (roiPercent > 0) {
+    financialOutlook = "Financial analysis supports strategic investment in emission reduction programs.";
+  } else if (roiPercent >= -20) {
+    financialOutlook = "Marginal financial viability; further evaluation of cost-benefit scenarios is recommended.";
+  } else {
+    financialOutlook = "Strategic investment required; financial returns may be long-term.";
+  }
+
+  return `Projected carbon credit generation: ${carbonCredits} credits, valued between INR ${formatIndianNumber(creditValueMin)} and INR ${formatIndianNumber(creditValueMax)}. Estimated return on investment for optimization initiatives is ${roiPercent}%. ${financialOutlook} Carbon credit monetization and compliance penalty avoidance present opportunities for the organization.`;
 }
 
 /**
@@ -191,6 +232,31 @@ function calculateOverallESGRating(analysis) {
 }
 
 /**
+ * Generates micro carbon capture strategy section
+ * @param {object} analysis
+ * @returns {string}
+ */
+function generateMicroCarbonCaptureSection(analysis) {
+  const microCapture = analysis.micro_capture || {};
+  
+  const emissionScale = microCapture.emission_scale || "Unknown";
+  const strategyType = microCapture.capture_strategy_type || "Not determined";
+  const suitabilityScore = roundTo(safeNumber(microCapture.suitability_score));
+  const estimatedCapture = roundTo(safeNumber(microCapture.estimated_capture_tons));
+  const complexity = microCapture.implementation_complexity || "Unknown";
+  const roiBoost = microCapture.expected_roi_boost || "Unknown";
+
+  let suitabilityPhrase = "limited";
+  if (suitabilityScore > 70) {
+    suitabilityPhrase = "high";
+  } else if (suitabilityScore >= 40) {
+    suitabilityPhrase = "moderate";
+  }
+
+  return `Emission Scale Classification: ${emissionScale}. Recommended carbon capture strategy: ${strategyType}. Strategic suitability assessment indicates a score of ${suitabilityScore}, reflecting ${suitabilityPhrase} alignment with facility operational profile. Estimated capture potential: ${estimatedCapture} tons, representing opportunity for direct emission reduction and carbon utilization. Implementation complexity is assessed as ${complexity}, with expected ROI boost categorized as ${roiBoost}. Deployment of micro carbon capture technology will enhance environmental performance, support regulatory compliance, and create value through carbon credit generation and circular economy integration.`;
+}
+
+/**
  * Generates comprehensive ESG report
  * @param {object} baseData
  * @param {object} analysis
@@ -207,6 +273,7 @@ function generateESGReport(baseData, analysis) {
     risk_and_compliance: generateRiskAndCompliance(analysis),
     optimization_strategy: generateOptimizationStrategy(analysis),
     financial_impact_summary: generateFinancialImpactSummary(analysis),
+    micro_carbon_capture_strategy: generateMicroCarbonCaptureSection(analysis),
     forward_outlook: generateForwardOutlook(baseData, analysis)
   };
 }

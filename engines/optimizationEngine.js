@@ -42,8 +42,10 @@ function calculateAnomalyRate(anomalyCount, totalHours) {
  * @returns {number}
  */
 function calculateDowntimePercent(downtimeMinutes, totalRuntimeMinutes) {
-  if (totalRuntimeMinutes === 0) return 0;
-  return (downtimeMinutes / totalRuntimeMinutes) * 100;
+  const totalMinutes = downtimeMinutes + totalRuntimeMinutes;
+  if (totalMinutes === 0) return 0;
+  const percent = (downtimeMinutes / totalMinutes) * 100;
+  return clamp(percent, 0, 100);
 }
 
 /**

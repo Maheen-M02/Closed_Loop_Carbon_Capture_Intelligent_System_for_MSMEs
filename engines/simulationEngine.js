@@ -86,9 +86,13 @@ function adjustHourlyEmissions(hourlyEmissions, energyPercent, loadPercent, runt
  * Simulates what-if scenario for carbon emissions
  * @param {object} baseData - Base emission data
  * @param {object} adjustments - Adjustment parameters
- * @returns {object} Simulation results with metrics and credits
+ * @returns {object} Simulation results with metrics, credits, and financial impact
  */
 function simulateWhatIfScenario(baseData, adjustments) {
+  const { calculateOptimizationPotential } = require('./optimizationEngine');
+  const { calculateFinancialImpact } = require('./roiEngine');
+  const { evaluateMicroCarbonCapture } = require('./microCarbonCaptureEngine');
+  
   const energyChange = safeNumber(adjustments?.energy_change_percent);
   const loadChange = safeNumber(adjustments?.load_change_percent);
   const runtimeChange = safeNumber(adjustments?.runtime_change_percent);
@@ -142,6 +146,12 @@ function simulateWhatIfScenario(baseData, adjustments) {
     adjustedData.total_emission_tons
   );
 
+  const optimization = calculateOptimizationPotential(adjustedData, metrics);
+  
+  const financialImpact = calculateFinancialImpact(adjustedData, metrics, optimization);
+  
+  const microCapture = evaluateMicroCarbonCapture(adjustedData, metrics);
+
   const emissionChangePercent = calculateEmissionChangePercent(
     baseData.total_emission_tons,
     adjustedData.total_emission_tons
@@ -151,7 +161,9 @@ function simulateWhatIfScenario(baseData, adjustments) {
     adjusted_emission: adjustedData.total_emission_tons,
     emission_change_percent: Math.round(emissionChangePercent * 100) / 100,
     metrics: metrics,
-    credits: credits
+    credits: credits,
+    financial_impact: financialImpact,
+    micro_capture: microCapture
   };
 }
 

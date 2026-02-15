@@ -25,6 +25,17 @@ function clamp(value, min = 0, max = 100) {
 }
 
 /**
+ * Rounds value to specified decimal places
+ * @param {number} value
+ * @param {number} decimals
+ * @returns {number}
+ */
+function roundTo(value, decimals = 2) {
+  const multiplier = Math.pow(10, decimals);
+  return Math.round(value * multiplier) / multiplier;
+}
+
+/**
  * Calculates mean of an array
  * @param {number[]} values - Array of numbers
  * @returns {number} Mean value
@@ -62,14 +73,16 @@ function calculateIntensityRisk(intensity, benchmark) {
 
 /**
  * Calculates emission growth risk score
- * @param {number} current - Current month emissions
+ * @param {number} predicted - Predicted next month emissions
  * @param {number} previous - Previous month emissions
  * @returns {number} Risk score (0-100)
  */
-function calculateGrowthRisk(current, previous) {
-  if (previous === 0) return current > 0 ? 100 : 0;
+function calculateGrowthRisk(predicted, previous) {
+  if (previous === 0) {
+    return predicted > 0 ? 100 : 0;
+  }
   
-  const growthRate = ((current - previous) / previous) * 100;
+  const growthRate = ((predicted - previous) / previous) * 100;
   
   if (growthRate <= 0) return 0;
   if (growthRate >= 20) return 100;
@@ -117,7 +130,9 @@ function calculateVolatilityRisk(hourlyEmissions) {
  */
 function calculateAnomalyFaultRisk(anomalyCount, totalHours, downtimeMinutes, totalRuntimeMinutes) {
   const anomalyScore = totalHours > 0 ? (anomalyCount / totalHours) * 100 : 0;
-  const faultScore = totalRuntimeMinutes > 0 ? (downtimeMinutes / totalRuntimeMinutes) * 100 : 0;
+  
+  const totalMinutes = downtimeMinutes + totalRuntimeMinutes;
+  const faultScore = totalMinutes > 0 ? (downtimeMinutes / totalMinutes) * 100 : 0;
   
   const compositeScore = (0.6 * clamp(anomalyScore)) + (0.4 * clamp(faultScore));
   return clamp(compositeScore);
@@ -148,10 +163,11 @@ function calculateCarbonMetrics(data) {
     : 0;
 
   let growthRate = 0;
-  if (previousEmission === 0 && totalEmission > 0) {
-    growthRate = 100;
-  } else if (previousEmission > 0) {
-    growthRate = ((totalEmission - previousEmission) / previousEmission) * 100;
+  if (previousEmission === 0) {
+    growthRate = predictedNextEmission > 0 ? 100 : 0;
+  } else {
+    const rawGrowth = ((predictedNextEmission - previousEmission) / previousEmission) * 100;
+    growthRate = clamp(rawGrowth, -200, 200);
   }
 
   const peakPercent = totalEmission > 0
@@ -159,7 +175,7 @@ function calculateCarbonMetrics(data) {
     : 0;
 
   const intensityRisk = calculateIntensityRisk(carbonIntensity, benchmarkIntensity);
-  const growthRisk = calculateGrowthRisk(totalEmission, previousEmission);
+  const growthRisk = calculateGrowthRisk(predictedNextEmission, previousEmission);
   const peakRisk = calculatePeakRisk(peakPercent);
   
   const { volatility, risk: volatilityRisk } = calculateVolatilityRisk(hourlyEmissions);
@@ -182,21 +198,22 @@ function calculateCarbonMetrics(data) {
   const finalRiskScore = clamp(carbonRiskScore);
 
   let forecastGrowthPercent = 0;
-  if (totalEmission === 0 && predictedNextEmission > 0) {
-    forecastGrowthPercent = 100;
-  } else if (totalEmission > 0) {
-    forecastGrowthPercent = ((predictedNextEmission - totalEmission) / totalEmission) * 100;
+  if (totalEmission === 0) {
+    forecastGrowthPercent = predictedNextEmission > 0 ? 100 : 0;
+  } else {
+    const rawForecast = ((predictedNextEmission - totalEmission) / totalEmission) * 100;
+    forecastGrowthPercent = clamp(rawForecast, -200, 200);
   }
 
   return {
-    carbon_intensity: carbonIntensity,
-    growth_rate: growthRate,
-    peak_percent: peakPercent,
-    volatility: volatility,
+    carbon_intensity: carbonIntensity < 0.01 ? roundTo(carbonIntensity, 4) : roundTo(carbonIntensity, 2),
+    growth_rate: roundTo(growthRate, 2),
+    peak_percent: roundTo(peakPercent, 2),
+    volatility: roundTo(volatility, 2),
     carbon_risk_score: finalRiskScore,
     risk_level: classifyRisk(finalRiskScore),
     stability_index: 100 - Math.round(volatilityRisk),
-    forecast_growth_percent: Math.round(forecastGrowthPercent * 100) / 100,
+    forecast_growth_percent: roundTo(forecastGrowthPercent, 2),
     breakdown: {
       intensity_risk: Math.round(intensityRisk),
       growth_risk: Math.round(growthRisk),

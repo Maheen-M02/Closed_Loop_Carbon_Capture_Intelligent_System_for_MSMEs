@@ -82,6 +82,9 @@ function generatePDFReport(baseData, analysis) {
       addSectionHeading(doc, 'Optimization Strategy');
       addSectionContent(doc, esgReport.optimization_strategy);
 
+      addSectionHeading(doc, 'Micro Carbon Capture Strategy');
+      addSectionContent(doc, esgReport.micro_carbon_capture_strategy);
+
       addSectionHeading(doc, 'Financial Impact Summary');
       addSectionContent(doc, esgReport.financial_impact_summary);
 

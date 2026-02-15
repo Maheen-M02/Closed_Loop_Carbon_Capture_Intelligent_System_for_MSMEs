@@ -1,11 +1,14 @@
-const { calculateCarbonMetrics } = require('../carbonIntelligenceEngine');
-const { calculateCarbonCredits } = require('../carbonCreditCalculator');
-const { simulateWhatIfScenario } = require('../simulationEngine');
-const { generateRecommendations } = require('../recommendationEngine');
-const { generateExplainability } = require('../explainabilityEngine');
-const { evaluateCompliance } = require('../complianceEngine');
-const { calculateOptimizationPotential } = require('../optimizationEngine');
-const { calculateFinancialImpact } = require('../roiEngine');
+﻿const { calculateCarbonMetrics } = require('../engines/carbonIntelligenceEngine');
+const { calculateCarbonCredits } = require('../engines/carbonCreditCalculator');
+const { simulateWhatIfScenario } = require('../engines/simulationEngine');
+const { generateRecommendations } = require('../engines/recommendationEngine');
+const { generateExplainability } = require('../engines/explainabilityEngine');
+const { evaluateCompliance } = require('../engines/complianceEngine');
+const { calculateOptimizationPotential } = require('../engines/optimizationEngine');
+const { calculateFinancialImpact } = require('../engines/roiEngine');
+const { generateESGReport } = require('../engines/esgReportEngine');
+const { evaluateMicroCarbonCapture } = require('../engines/microCarbonCaptureEngine');
+const { generateCreditCertificate } = require('../engines/blockchainVerificationEngine');
 
 function analyzeFactoryData(baseData) {
   if (!baseData || typeof baseData !== "object") {
@@ -21,6 +24,8 @@ function analyzeFactoryData(baseData) {
     safeData.total_emission_tons
   );
 
+  const blockchainVerification = generateCreditCertificate(safeData, credits);
+
   const recommendations = generateRecommendations(safeData, metrics);
 
   const explainability = generateExplainability(safeData, metrics, recommendations);
@@ -31,15 +36,30 @@ function analyzeFactoryData(baseData) {
 
   const financialImpact = calculateFinancialImpact(safeData, metrics, optimization);
 
+  const microCapture = evaluateMicroCarbonCapture(safeData, metrics);
+
+  const esgReport = generateESGReport(safeData, {
+    metrics,
+    recommendations,
+    compliance,
+    optimization,
+    financial_impact: financialImpact,
+    explainability,
+    micro_capture: microCapture
+  });
+
   return {
     emissions: safeData.total_emission_tons,
     metrics,
     credits,
+    blockchain_verification: blockchainVerification,
     recommendations,
     explainability,
     compliance,
     optimization,
-    financial_impact: financialImpact
+    financial_impact: financialImpact,
+    micro_capture: microCapture,
+    esg_report: esgReport
   };
 }
 
