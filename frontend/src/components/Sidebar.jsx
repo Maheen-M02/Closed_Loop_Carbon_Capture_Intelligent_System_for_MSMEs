@@ -13,7 +13,8 @@ export default function Sidebar({ currentPage, onNavigate }) {
     { id: 'optimization', label: 'Optimization', icon: '⚡', path: '/optimization' },
     { id: 'carbon-capture', label: 'Carbon Capture', icon: '🌱', path: '/carbon-capture' },
     { id: 'simulator', label: 'Simulator', icon: '🔬', path: '/simulator' },
-    { id: 'reports', label: 'Reports', icon: '📄', path: '/reports' }
+    { id: 'reports', label: 'Reports', icon: '📄', path: '/reports' },
+    { id: 'calculator-marketplace', label: 'Calculator and Marketplace', icon: '🛒', path: null, disabled: false, comingSoon: false, externalUrl: 'http://localhost:3001/dashboard.html' }
   ];
 
   // Update currentPage based on location
@@ -25,6 +26,14 @@ export default function Sidebar({ currentPage, onNavigate }) {
   }, [location.pathname]);
 
   const handleNavigation = (item) => {
+    if (item.disabled) return;
+    
+    // Handle external link for calculator-marketplace
+    if (item.id === 'calculator-marketplace' && item.externalUrl) {
+      window.location.href = item.externalUrl;
+      return;
+    }
+    
     navigate(item.path);
     if (onNavigate) {
       onNavigate(item.id);
@@ -41,11 +50,15 @@ export default function Sidebar({ currentPage, onNavigate }) {
         {menuItems.map(item => (
           <button
             key={item.id}
-            className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
+            className={`nav-item ${currentPage === item.id ? 'active' : ''} ${item.disabled ? 'nav-item-disabled' : ''} ${item.comingSoon ? 'nav-item-coming-soon' : ''}`}
             onClick={() => handleNavigation(item)}
+            disabled={item.disabled}
           >
             <span className="nav-icon">{item.icon}</span>
-            <span className="nav-label">{item.label}</span>
+            <span className="nav-label">
+              {item.label}
+              {item.comingSoon && <span className="coming-soon-badge">Coming Soon</span>}
+            </span>
           </button>
         ))}
       </nav>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Carbon Credit Purchase</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="checkout-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h1>💳 Checkout</h1>
+                    <p class="subtitle">Complete your carbon credit purchase</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="marketplace.html" class="btn-nav">← Back to Marketplace</a>
+                    <span id="user-name" style="color: #4a7c59; font-weight: 600;"></span>
+                    <button id="logout-btn" class="btn-logout">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Order Summary -->
+            <section class="card">
+                <h2>📋 Order Summary</h2>
+                <div id="order-summary" class="order-summary">
+                    <div class="loading-placeholder">Loading order details...</div>
+                </div>
+            </section>
+
+            <!-- Payment Information -->
+            <section class="card">
+                <h2>💰 Payment Information</h2>
+                <form id="checkout-form">
+                    <div class="form-section">
+                        <h3>Billing Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="billing-name">Full Name *</label>
+                                <input type="text" id="billing-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="billing-email">Email Address *</label>
+                                <input type="email" id="billing-email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="billing-company">Company Name</label>
+                                <input type="text" id="billing-company">
+                            </div>
+                            <div class="form-group">
+                                <label for="billing-phone">Phone Number</label>
+                                <input type="tel" id="billing-phone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="billing-address">Address *</label>
+                            <textarea id="billing-address" rows="3" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Payment Method</h3>
+                        <div class="payment-methods">
+                            <div class="payment-method active" data-method="upi">
+                                <div class="payment-icon">📱</div>
+                                <div class="payment-info">
+                                    <h4>UPI Payment</h4>
+                                    <p>Pay using UPI apps like GPay, PhonePe, Paytm</p>
+                                </div>
+                            </div>
+                            <div class="payment-method" data-method="card">
+                                <div class="payment-icon">💳</div>
+                                <div class="payment-info">
+                                    <h4>Credit/Debit Card</h4>
+                                    <p>Visa, Mastercard, RuPay accepted</p>
+                                </div>
+                            </div>
+                            <div class="payment-method" data-method="netbanking">
+                                <div class="payment-icon">🏦</div>
+                                <div class="payment-info">
+                                    <h4>Net Banking</h4>
+                                    <p>All major banks supported</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UPI Payment Details -->
+                        <div id="upi-details" class="payment-details active">
+                            <div class="form-group">
+                                <label for="upi-id">UPI ID *</label>
+                                <input type="text" id="upi-id" placeholder="yourname@paytm" required>
+                            </div>
+                        </div>
+
+                        <!-- Card Payment Details -->
+                        <div id="card-details" class="payment-details">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="card-number">Card Number *</label>
+                                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="card-name">Cardholder Name *</label>
+                                    <input type="text" id="card-name" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="card-expiry">Expiry Date *</label>
+                                    <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="card-cvv">CVV *</label>
+                                    <input type="text" id="card-cvv" placeholder="123" maxlength="3" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Net Banking Details -->
+                        <div id="netbanking-details" class="payment-details">
+                            <div class="form-group">
+                                <label for="bank-select">Select Your Bank *</label>
+                                <select id="bank-select" required>
+                                    <option value="">Choose your bank</option>
+                                    <option value="sbi">State Bank of India</option>
+                                    <option value="hdfc">HDFC Bank</option>
+                                    <option value="icici">ICICI Bank</option>
+                                    <option value="axis">Axis Bank</option>
+                                    <option value="kotak">Kotak Mahindra Bank</option>
+                                    <option value="pnb">Punjab National Bank</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="form-section">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms-checkbox" required>
+                            <label for="terms-checkbox">
+                                I agree to the <a href="#" class="link">Terms and Conditions</a> and 
+                                <a href="#" class="link">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newsletter-checkbox">
+                            <label for="newsletter-checkbox">
+                                Subscribe to newsletter for carbon credit updates
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="checkout-actions">
+                        <button type="button" class="btn-secondary" onclick="window.history.back()">
+                            ← Cancel
+                        </button>
+                        <button type="submit" class="btn-primary checkout-btn" id="complete-purchase-btn">
+                            <span class="btn-text">Complete Purchase</span>
+                            <span class="btn-amount" id="checkout-total">₹0</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal" style="display: none;">
+        <div class="modal-content success-modal">
+            <div class="success-icon">✅</div>
+            <h2>Purchase Successful!</h2>
+            <div id="success-details"></div>
+            <div class="success-actions">
+                <button class="btn-primary" onclick="window.location.href='profile.html'">
+                    View My Credits
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='marketplace.html'">
+                    Back to Marketplace
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="checkout.js"></script>
+</body>
+</html>

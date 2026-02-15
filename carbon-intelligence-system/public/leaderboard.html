@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Carbon Intelligence System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="leaderboard-styles.css">
+    <link rel="stylesheet" href="notification-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h1>🏆 Carbon Credit Leaderboard</h1>
+                    <p class="subtitle">See how you rank among eco-warriors worldwide</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="dashboard.html" class="btn-nav">Dashboard</a>
+                    <a href="profile.html" class="btn-nav">Profile</a>
+                    <span id="user-name" style="color: #4a7c59; font-weight: 600;"></span>
+                    <button id="logout-btn" class="btn-logout">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Leaderboard Filters -->
+            <section class="card">
+                <h2>📊 Leaderboard Filters</h2>
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label>Time Period</label>
+                        <select id="time-filter">
+                            <option value="current-year">Current Year (2026)</option>
+                            <option value="all-time">All Time</option>
+                            <option value="last-month">Last 30 Days</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Industry</label>
+                        <select id="industry-filter">
+                            <option value="all">All Industries</option>
+                            <option value="textile">Textile</option>
+                            <option value="steel">Steel</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" id="refresh-leaderboard">🔄 Refresh</button>
+                </div>
+            </section>
+
+            <!-- Your Ranking -->
+            <section class="card" id="user-ranking-section" style="display: none;">
+                <h2>🎯 Your Ranking</h2>
+                <div class="user-rank-card">
+                    <div class="rank-position">
+                        <span class="rank-number" id="user-rank">#-</span>
+                        <span class="rank-label">Your Position</span>
+                    </div>
+                    <div class="rank-details">
+                        <div class="rank-item">
+                            <label>Your Credits</label>
+                            <span id="user-credits">0</span>
+                        </div>
+                        <div class="rank-item">
+                            <label>Credits Behind Leader</label>
+                            <span id="credits-behind">0</span>
+                        </div>
+                        <div class="rank-item">
+                            <label>Percentile</label>
+                            <span id="user-percentile">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top Performers -->
+            <section class="card">
+                <h2>🥇 Top Carbon Credit Earners</h2>
+                <div id="leaderboard-loading" class="loading-state">
+                    <p>Loading leaderboard data...</p>
+                </div>
+                <div id="leaderboard-content" style="display: none;">
+                    <div class="podium">
+                        <div class="podium-place second" id="second-place">
+                            <div class="podium-medal">🥈</div>
+                            <div class="podium-info">
+                                <h4>2nd Place</h4>
+                                <p class="podium-name">-</p>
+                                <p class="podium-credits">0 Credits</p>
+                            </div>
+                        </div>
+                        <div class="podium-place first" id="first-place">
+                            <div class="podium-medal">🥇</div>
+                            <div class="podium-info">
+                                <h4>1st Place</h4>
+                                <p class="podium-name">-</p>
+                                <p class="podium-credits">0 Credits</p>
+                            </div>
+                        </div>
+                        <div class="podium-place third" id="third-place">
+                            <div class="podium-medal">🥉</div>
+                            <div class="podium-info">
+                                <h4>3rd Place</h4>
+                                <p class="podium-name">-</p>
+                                <p class="podium-credits">0 Credits</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-table">
+                        <div class="table-header">
+                            <span>Rank</span>
+                            <span>Name</span>
+                            <span>Industry</span>
+                            <span>Credits</span>
+                            <span>CO₂ Reduced</span>
+                        </div>
+                        <div id="leaderboard-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="card">
+                <h2>📈 Global Statistics</h2>
+                <div id="global-stats">
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <h4>Total Users</h4>
+                            <p class="stat-value" id="total-users">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Total Credits Earned</h4>
+                            <p class="stat-value" id="total-credits-global">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Total CO₂ Reduced</h4>
+                            <p class="stat-value" id="total-co2-reduced">0 tons</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Average Credits/User</h4>
+                            <p class="stat-value" id="avg-credits">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="notifications.js"></script>
+    <script src="leaderboard.js"></script>
+</body>
+</html>

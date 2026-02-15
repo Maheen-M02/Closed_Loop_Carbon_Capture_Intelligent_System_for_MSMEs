@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Carbon Intelligence System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile-styles.css">
+    <link rel="stylesheet" href="notification-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h1>🌱 Carbon Intelligence System</h1>
+                    <p class="subtitle">Your Carbon Credit Profile</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="dashboard.html" class="btn-nav">Dashboard</a>
+                    <a href="marketplace.html" class="btn-nav">💰 Marketplace</a>
+                    <a href="leaderboard.html" class="btn-nav">🏆 Leaderboard</a>
+                    <span id="user-name" style="color: #4a7c59; font-weight: 600;"></span>
+                    <button id="logout-btn" class="btn-logout">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Carbon Credit Score -->
+            <section class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>💳 Your Carbon Credit Score</h2>
+                    <div style="background: #e74c3c; color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                        <span id="current-year">2026</span> Credits (Resets Jan 1)
+                    </div>
+                </div>
+                <div class="credit-score-container">
+                    <div class="credit-score-circle">
+                        <div class="score-display">
+                            <span id="total-credits" class="credit-number">0</span>
+                            <span class="credit-label">Carbon Credits</span>
+                        </div>
+                    </div>
+                    <div class="credit-info">
+                        <div class="info-item">
+                            <h3>Total Emissions Reduced</h3>
+                            <p id="total-reduction">0 tons CO₂</p>
+                        </div>
+                        <div class="info-item">
+                            <h3>Estimated Value</h3>
+                            <p id="credit-value">₹0 - ₹0</p>
+                        </div>
+                        <div class="info-item">
+                            <h3>Sustainability Rating</h3>
+                            <p id="sustainability-rating">Not Rated</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Profile Info -->
+            <section class="card">
+                <h2>👤 Profile Information</h2>
+                <div class="profile-info">
+                    <div class="profile-field">
+                        <label>Name</label>
+                        <p id="profile-name">-</p>
+                    </div>
+                    <div class="profile-field">
+                        <label>Email</label>
+                        <p id="profile-email">-</p>
+                    </div>
+                    <div class="profile-field">
+                        <label>Company/Organization</label>
+                        <p id="profile-company">-</p>
+                    </div>
+                    <div class="profile-field">
+                        <label>Member Since</label>
+                        <p id="profile-joined">-</p>
+                    </div>
+                    <div class="profile-field">
+                        <label>Leaderboard Visibility</label>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                            <input type="checkbox" id="leaderboard-visibility" style="width: 20px; height: 20px;">
+                            <span style="color: var(--dark-green); font-size: 1rem;">Show me on leaderboard</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Emission History -->
+            <section class="card">
+                <h2>📊 Emission History</h2>
+                <div id="emission-history">
+                    <p style="text-align: center; color: #4a7c59;">No emission data recorded yet. Start calculating emissions on the dashboard!</p>
+                </div>
+            </section>
+
+            <!-- Carbon Credit Breakdown -->
+            <section class="card">
+                <h2>🌍 Carbon Credit Breakdown</h2>
+                <div id="credit-breakdown">
+                    <p style="text-align: center; color: #4a7c59;">Calculate emissions to see your carbon credit breakdown.</p>
+                </div>
+            </section>
+
+            <!-- Blockchain Verification -->
+            <section class="card">
+                <h2>🔐 Blockchain Verification</h2>
+                <div id="blockchain-status">
+                    <p style="text-align: center; color: #4a7c59;">Loading blockchain status...</p>
+                </div>
+            </section>
+
+            <!-- Achievements -->
+            <section class="card">
+                <h2>🏆 Achievements</h2>
+                <div class="achievements-grid" id="achievements">
+                    <div class="achievement-badge locked">
+                        <div class="badge-icon">🌱</div>
+                        <h4>First Step</h4>
+                        <p>Calculate your first emission</p>
+                    </div>
+                    <div class="achievement-badge locked">
+                        <div class="badge-icon">♻️</div>
+                        <h4>Eco Warrior</h4>
+                        <p>Earn 10 carbon credits</p>
+                    </div>
+                    <div class="achievement-badge locked">
+                        <div class="badge-icon">🌟</div>
+                        <h4>Sustainability Champion</h4>
+                        <p>Achieve 80+ sustainability score</p>
+                    </div>
+                    <div class="achievement-badge locked">
+                        <div class="badge-icon">🎯</div>
+                        <h4>Consistent Tracker</h4>
+                        <p>Track emissions for 7 days</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="blockchain.js"></script>
+    <script src="notifications.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html>

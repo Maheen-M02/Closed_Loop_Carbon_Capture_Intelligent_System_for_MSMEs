@@ -1,0 +1,65 @@
+================================================================================
+  CARBON INTELLIGENCE PLATFORM - START HERE
+================================================================================
+
+Your system is ready! Node.js v22.20.0 and npm v11.6.0 are installed.
+
+QUICK START (3 STEPS):
+================================================================================
+
+STEP 1: Install Dependencies
+----------------------------
+Open Command Prompt in this folder and run:
+    setup.bat
+
+Wait for installation to complete (may take 2-3 minutes)
+
+STEP 2: Start the Application
+----------------------------
+Run this command:
+    start-dev.bat
+
+Two new windows will open (Backend + Frontend servers)
+
+STEP 3: Open in Browser
+----------------------------
+Open your web browser and go to:
+    http://localhost:5173
+
+You should see the Carbon Intelligence Platform dashboard!
+
+================================================================================
+
+ALTERNATIVE: Manual Setup
+================================================================================
+
+1. Install backend:
+   npm install
+
+2. Install frontend:
+   cd frontend
+   npm install
+   cd ..
+
+3. Start backend (Terminal 1):
+   npm run dev
+
+4. Start frontend (Terminal 2):
+   cd frontend
+   npm run dev
+
+================================================================================
+
+DOCUMENTATION:
+- INSTALL.md      - Detailed installation guide
+- QUICKSTART.md   - Quick start and troubleshooting
+- README.md       - Project overview and API docs
+
+================================================================================
+
+NEED HELP?
+- Check QUICKSTART.md for troubleshooting
+- Verify both servers are running
+- Check browser console for errors
+
+================================================================================

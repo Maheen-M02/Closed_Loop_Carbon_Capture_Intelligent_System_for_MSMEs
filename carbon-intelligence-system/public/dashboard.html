@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Intelligence Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="notification-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h1>🌱 Carbon Intelligence System</h1>
+                    <p class="subtitle">Track, Calculate & Reduce Your Carbon Footprint</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="marketplace.html" class="btn-nav">💰 Marketplace</a>
+                    <a href="leaderboard.html" class="btn-nav">🏆 Leaderboard</a>
+                    <a href="profile.html" class="btn-nav">Profile</a>
+                    <span id="user-name" style="color: #4a7c59; font-weight: 600;"></span>
+                    <button id="logout-btn" class="btn-logout">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Industry Selection -->
+            <section class="card">
+                <h2>Select Industry Type</h2>
+                <div class="industry-selector">
+                    <button class="industry-btn active" data-industry="textile">
+                        🧵 Textile
+                    </button>
+                    <button class="industry-btn" data-industry="steel">
+                        🏭 Steel
+                    </button>
+                    <button class="industry-btn" data-industry="other">
+                        🏢 Other
+                    </button>
+                </div>
+            </section>
+
+            <!-- Notifications -->
+            <section class="card" id="dashboard-notifications" style="display: none;">
+                <h2>🔔 Notifications</h2>
+                <div id="dashboard-notifications-list"></div>
+            </section>
+
+            <!-- File Import Section -->
+            <section class="card">
+                <h2>📁 Import Data File</h2>
+                <p style="color: #4a7c59; margin-bottom: 15px;">Upload a CSV, JSON, or Excel file with your production data</p>
+                <div class="file-upload-container">
+                    <input type="file" id="file-input" accept=".csv,.json,.xlsx,.xls,.pkl" style="display: none;">
+                    <button class="btn-secondary" id="upload-btn">
+                        📤 Choose File
+                    </button>
+                    <span id="file-name" style="margin-left: 15px; color: #4a7c59;"></span>
+                </div>
+                <button class="btn-primary" id="process-file-btn" style="display: none; margin-top: 15px;">
+                    🔍 Process File & Calculate Emissions
+                </button>
+            </section>
+
+            <!-- Input Forms -->
+            <section class="card">
+                <h2>Enter Production Data</h2>
+                
+                <!-- Textile Form -->
+                <form id="textile-form" class="input-form active">
+                    <div class="form-group">
+                        <label>Electricity Consumption (kWh)</label>
+                        <input type="number" id="textile-electricity" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Diesel Usage (Liters)</label>
+                        <input type="number" id="textile-diesel" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Coal Consumption (kg)</label>
+                        <input type="number" id="textile-coal" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>LPG Usage (kg)</label>
+                        <input type="number" id="textile-lpg" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Production Units</label>
+                        <input type="number" id="textile-units" step="1" placeholder="1" required>
+                    </div>
+                </form>
+
+                <!-- Steel Form -->
+                <form id="steel-form" class="input-form">
+                    <div class="form-group">
+                        <label>Energy Usage (kWh)</label>
+                        <input type="number" id="steel-usage" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Lagging Power Factor</label>
+                        <input type="number" id="steel-lagging-pf" step="0.01" min="0" max="1" placeholder="0.85">
+                    </div>
+                    <div class="form-group">
+                        <label>Leading Power Factor</label>
+                        <input type="number" id="steel-leading-pf" step="0.01" min="0" max="1" placeholder="0.85">
+                    </div>
+                    <div class="form-group">
+                        <label>Energy Change Rate</label>
+                        <input type="number" id="steel-change-rate" step="0.01" placeholder="0.05">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="steel-anomaly"> Anomaly Detected
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Production Units</label>
+                        <input type="number" id="steel-units" step="1" placeholder="1" required>
+                    </div>
+                </form>
+
+                <!-- Other Form -->
+                <form id="other-form" class="input-form">
+                    <div class="form-group">
+                        <label>Total Energy Consumption (kWh)</label>
+                        <input type="number" id="other-energy" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Emission Factor (kg CO2/kWh)</label>
+                        <input type="number" id="other-factor" step="0.01" value="0.82" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Production Units</label>
+                        <input type="number" id="other-units" step="1" placeholder="1" required>
+                    </div>
+                </form>
+
+                <button class="btn-primary" id="calculate-btn">Calculate CO2 Emissions</button>
+            </section>
+
+            <!-- Results -->
+            <section class="card results-section" id="results" style="display: none;">
+                <h2>📊 Emission Report</h2>
+                
+                <div class="result-summary">
+                    <div class="result-card">
+                        <h3>Total CO2 Emissions</h3>
+                        <p class="result-value" id="total-co2">0</p>
+                        <span class="result-unit">kg CO2</span>
+                    </div>
+                    <div class="result-card">
+                        <h3>Carbon Intensity</h3>
+                        <p class="result-value" id="carbon-intensity">0</p>
+                        <span class="result-unit">kg CO2/unit</span>
+                    </div>
+                    <div class="result-card">
+                        <h3>Risk Score</h3>
+                        <p class="result-value" id="risk-score">0</p>
+                        <span class="result-unit">/ 100</span>
+                    </div>
+                </div>
+
+                <div class="breakdown" id="breakdown"></div>
+
+                <button class="btn-sustainability" id="sustainability-btn">
+                    🌍 Show Sustainability Index
+                </button>
+
+                <div class="sustainability-index" id="sustainability-index" style="display: none;"></div>
+
+                <div class="recommendations" id="recommendations"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="blockchain.js"></script>
+    <script src="notifications.js"></script>
+    <script src="dashboard-auth.js"></script>
+
+</body>
+</html>

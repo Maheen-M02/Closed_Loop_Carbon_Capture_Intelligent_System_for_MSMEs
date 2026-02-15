@@ -1,0 +1,12 @@
+{
+  "name": "carbon-intelligence-system",
+  "version": "1.0.0",
+  "description": "Carbon Intelligence Calculator and Marketplace",
+  "scripts": {
+    "start": "npx http-server public -p 3001 -o",
+    "dev": "npx http-server public -p 3001"
+  },
+  "keywords": ["carbon", "calculator", "marketplace"],
+  "author": "",
+  "license": "ISC"
+}

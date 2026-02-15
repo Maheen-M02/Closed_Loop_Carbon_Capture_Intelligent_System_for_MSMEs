@@ -5,3 +5,7 @@ dist/
 .DS_Store
 frontend/node_modules/
 frontend/dist/
+
+# Firebase credentials
+*firebase-adminsdk*.json
+carbon-intelligence-system/closed-loop-carbon-intel-firebase-adminsdk-fbsvc-ddf5d1acee.json
